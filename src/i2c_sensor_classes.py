@@ -32,6 +32,7 @@ class I2CDevice:
         self.i2c_lib.i2c_write(device, self.addr, self.raw_data, 1)
         return device
     
+
 class Ky015Sensor(I2CDevice):
     def __init__(self, i2c_lib, sda_pin, scl_pin, addr):
         super().__init__( i2c_lib, sda_pin, scl_pin, addr, 5)
@@ -49,3 +50,22 @@ class Ky015Sensor(I2CDevice):
         self.temperature = t
         self.humidity = h
         return t, h    
+
+
+class Ky018Sensor(I2CDevice):
+    def __init__(self, i2c_lib, sda_pin, scl_pin, addr):
+        super().__init__( i2c_lib, sda_pin, scl_pin, addr, 2)
+        self.brightness = None
+
+    def decode_raw_data(self, data):
+        return data[0] << 8 | data[1] 
+
+    def get_brightness_data(self):
+        raw_data = self.read_and_get_data()
+        return self.decode_raw_data(raw_data)
+
+    def _open_pynq_device_i2c_bus(self):
+        self.raw_data = int('00011000',2)
+        device = self.i2c_lib.i2c_open(self.sda_pin, self.scl_pin)
+        self.i2c_lib.i2c_write(device, self.addr, self.raw_data, 1)
+        return device
