@@ -65,7 +65,7 @@ class Ky018Sensor(I2CDevice):
         return self.decode_raw_data(raw_data)
 
     def _open_pynq_device_i2c_bus(self):
-        self.raw_data = int('00011000',2)
+        self.raw_data[0]= int('00011000',2)
         device = self.i2c_lib.i2c_open(self.sda_pin, self.scl_pin)
         self.i2c_lib.i2c_write(device, self.addr, self.raw_data, 1)
         return device
