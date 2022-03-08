@@ -39,9 +39,10 @@ class HabitatMonitorClient(Client):
     def _is_new_client(self):
         client_ids_feed = self.feeds(self.CLIENT_ID_FEED)
         client_ids = self.data(client_ids_feed.key)
+        client_count = len(client_ids)
         for num, cid in enumerate(client_ids):
             if self.client_id == cid.value:
-                self.client_number = num 
+                self.client_number = client_count - num 
                 return False
         return True
 
