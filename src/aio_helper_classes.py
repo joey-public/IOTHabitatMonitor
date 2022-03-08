@@ -1,4 +1,4 @@
-from Adafruit_IO import Client, Feed
+from Adafruit_IO import Client, Feed, Group
 class HabitatMonitorClient(Client):
     def __init__(self, aio_uname, aio_key, client_id):
         print('creating new HabitatMonitor...')
@@ -55,3 +55,68 @@ class HabitatMonitorClient(Client):
         for feed_name, group_name in self.FEED_GROUPS.items():
             feed = Feed(name='{}-{}-{}'.format(feed_name, self.client_id, self.client_number,))
             self.create_feed(feed, group_name)
+
+
+class HabitatMonitorClient(Client):
+    def __init__(self, aio_uname, aio_key):
+        super().__init__(aio_uname, aio_key)
+        self.client_ids = self.get_client_ids()
+        self.high_bright_feed = self.feeds('high-brightness-threshold')
+        self.high_hum= self.feeds('high-humidity-feed')
+        self.high_temp= self.feeds('high-temperature-feed')
+        self.low_bright_feed = self.feeds('low-brightness-threshold')
+        self.low_hum= self.feeds('low-humidity-feed')
+        self.low_temp= self.feeds('low-temperature-feed')
+    def get_client_ids():
+        id_feed = self.feeds('client-ids')
+        for client_id in id_feed:
+            print(client_id.value)
+            self.client_ids.append(client_id.value)
+    @property
+    def high_temp(self):
+        return self.__high_temp
+    @high_temp.setter
+    def high_temp(self, val):
+        if val != None:
+            self.send(self.high_temp_feed.key, val)
+        return val
+    @property
+    def high_hum(self):
+        return self.__high_hum
+    @high_hum.setter
+    def high_hum(self, val):
+        if val != None:
+            self.send(self.high_hum_feed.key, val)
+        return val
+    @property
+    def high_bright(self):
+        return self.__high_bright
+    @high_bright.setter
+    def high_bright(self, val):
+        if val != None:
+            self.send(self.high_bright_feed.key, val)
+        return val
+    @property
+    def low_temp(self):
+        return self.__low_temp
+    @low_temp.setter
+    def low_temp(self, val):
+        if val != None:
+            self.send(self.low_temp_feed.key, val)
+        return val
+    @property
+    def low_hum(self):
+        return self.__low_hum
+    @low_hum.setter
+    def low_hum(self, val):
+        if val != None:
+            self.send(self.low_hum_feed.key, val)
+        return val
+    @property
+    def low_bright(self):
+        return self.__low_bright
+    @low_bright.setter
+    def low_bright(self, val):
+        if val != None:
+            self.send(self.low_bright_feed.key, val)
+        return val
