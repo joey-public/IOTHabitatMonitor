@@ -10,6 +10,12 @@ class HabitatMonitorClient(Client):
             'brightness':'brightness-measurements' 
         }
         self.client_id = client_id
+        self.lbtFeed = self.feeds('low-brightness-threshold')
+        self.hbtFeed = self.feeds('high-brightness-threshold')
+        self.lttFeed = self.feeds('low-temperature-threshold')
+        self.httFeed = self.feeds('high-temperature-threshold')
+        self.lhtFeed = self.feeds('low-humidity-threshold')
+        self.hhtFeed = self.feeds('high-humidity-threshold')
         self.temperature_feed = None
         self.humidity_feed = None
         self.brightness_feed = None
@@ -21,7 +27,6 @@ class HabitatMonitorClient(Client):
     def _initilize_feeds(self):
         if not(self._is_new_client()):
             client_id_feed = self.feeds(self.CLIENT_ID_FEED)
-            self.client_number = len(self.data(client_id_feed.key))
         else:
             self._create_new_feeds()
         self._set_feeds()
@@ -34,8 +39,9 @@ class HabitatMonitorClient(Client):
     def _is_new_client(self):
         client_ids_feed = self.feeds(self.CLIENT_ID_FEED)
         client_ids = self.data(client_ids_feed.key)
-        for cid in client_ids:
+        for num, cid in enumerate(client_ids):
             if self.client_id == cid.value:
+                self.client_number = num 
                 return False
         return True
 
@@ -57,7 +63,7 @@ class HabitatMonitorClient(Client):
             self.create_feed(feed, group_name)
 
 
-class HabitatMonitorClient(Client):
+class HabitatMonitorServer(Client):
     def __init__(self, aio_uname, aio_key):
         super().__init__(aio_uname, aio_key)
         self.client_ids = self.get_client_ids()
