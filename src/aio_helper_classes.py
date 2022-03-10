@@ -65,20 +65,36 @@ class HabitatMonitorClient(Client):
 
 
 class HabitatMonitorServer(Client):
-    def __init__(self, aio_uname, aio_key):
+    def __init__(self, aio_uname, aio_key, server_id):
         super().__init__(aio_uname, aio_key)
+        print('Creating Habitat Mon Server...')
+        self.server_id = server_id
         self.client_ids = self.get_client_ids()
         self.high_bright_feed = self.feeds('high-brightness-threshold')
-        self.high_hum= self.feeds('high-humidity-feed')
-        self.high_temp= self.feeds('high-temperature-feed')
+        self.high_hum_feed= self.feeds('high-humidity-threshold')
+        self.high_temp_feed = self.feeds('high-temperature-threshold')
         self.low_bright_feed = self.feeds('low-brightness-threshold')
-        self.low_hum= self.feeds('low-humidity-feed')
-        self.low_temp= self.feeds('low-temperature-feed')
-    def get_client_ids():
+        self.low_hum_feed = self.feeds('low-humidity-threshold')
+        self.low_temp_feed = self.feeds('low-temperature-threshold')
+        self.temperature_group = self.groups('temperature-measurements')
+        self.humidity_group = self.groups('humidity-measurements')
+        self.brightness_group = self.groups('brightness-measurements')
+        self.client_status_feed = self.feeds('client-status')
+        self.high_temp, self.low_temp = None, None
+        self.high_hum, self.low_hum = None, None
+        self.high_bright, self.low_bright = None, None
+        self.LOWER_THEN_THRESHOLD = 'READING BELOW THRESHOLD: {} < {}!'
+        self.HIGHER_THEN_THRESHOLD = 'READING ABOVE THRESHOLD: {} > {}!'
+    def get_client_ids(self):
+        client_id_list = []
         id_feed = self.feeds('client-ids')
-        for client_id in id_feed:
-            print(client_id.value)
-            self.client_ids.append(client_id.value)
+        cids = self.data(id_feed.key)
+        for client_id in cids:
+            client_id_list.append(client_id.value)
+        return client_id_list
+    def get_client_num(self,client_feed_key):
+        return int(client_feed_key[-1])
+    
     @property
     def high_temp(self):
         return self.__high_temp
@@ -86,7 +102,7 @@ class HabitatMonitorServer(Client):
     def high_temp(self, val):
         if val != None:
             self.send(self.high_temp_feed.key, val)
-        return val
+        self.__high_temp = val
     @property
     def high_hum(self):
         return self.__high_hum
@@ -94,7 +110,7 @@ class HabitatMonitorServer(Client):
     def high_hum(self, val):
         if val != None:
             self.send(self.high_hum_feed.key, val)
-        return val
+        self.__high_hum = val
     @property
     def high_bright(self):
         return self.__high_bright
@@ -102,7 +118,7 @@ class HabitatMonitorServer(Client):
     def high_bright(self, val):
         if val != None:
             self.send(self.high_bright_feed.key, val)
-        return val
+        self.__high_bright = val
     @property
     def low_temp(self):
         return self.__low_temp
@@ -110,7 +126,7 @@ class HabitatMonitorServer(Client):
     def low_temp(self, val):
         if val != None:
             self.send(self.low_temp_feed.key, val)
-        return val
+        self.__low_temp = val
     @property
     def low_hum(self):
         return self.__low_hum
@@ -118,7 +134,7 @@ class HabitatMonitorServer(Client):
     def low_hum(self, val):
         if val != None:
             self.send(self.low_hum_feed.key, val)
-        return val
+        self.__low_hum = val
     @property
     def low_bright(self):
         return self.__low_bright
@@ -126,4 +142,4 @@ class HabitatMonitorServer(Client):
     def low_bright(self, val):
         if val != None:
             self.send(self.low_bright_feed.key, val)
-        return val
+        self.__low_bright = val       
