@@ -83,8 +83,8 @@ class HabitatMonitorServer(Client):
         self.high_temp, self.low_temp = None, None
         self.high_hum, self.low_hum = None, None
         self.high_bright, self.low_bright = None, None
-        self.LOWER_THEN_THRESHOLD = 'READING BELOW THRESHOLD: {} < {}!'
-        self.HIGHER_THEN_THRESHOLD = 'READING ABOVE THRESHOLD: {} > {}!'
+        self.LOWER_THEN_THRESHOLD = 'READING BELOW THRESHOLD'
+        self.HIGHER_THEN_THRESHOLD = 'READING ABOVE THRESHOLD'
     def get_client_ids(self):
         client_id_list = []
         id_feed = self.feeds('client-ids')
